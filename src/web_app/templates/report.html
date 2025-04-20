@@ -1,419 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Report Analysis</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <style>
-        .chat-container {
-            height: 450px;
-            overflow-y: auto;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-        }
-        
-        .chat-message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
-        }
-        
-        .user-message {
-            background-color: #e2f0ff;
-            margin-left: auto;
-            text-align: right;
-        }
-        
-        .bot-message {
-            background-color: #f0f0f0;
-            margin-right: auto;
-        }
-        
-        .loading-indicator {
-            display: inline-block;
-            width: 80px;
-            text-align: center;
-        }
-        
-        .loading-indicator:after {
-            content: " .";
-            animation: dots 1s steps(5, end) infinite;
-        }
-        
-        @keyframes dots {
-            0%, 20% { content: " ."; }
-            40% { content: " .."; }
-            60% { content: " ..."; }
-            80%, 100% { content: " ...."; }
-        }
-        
-        .supporting-info {
-            font-size: 0.85rem;
-            margin-top: 10px;
-            padding: 8px;
-            background-color: #f8f9fa;
-            border-left: 3px solid #007bff;
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">Annual Report AI Agent</a>
-            <span class="navbar-text text-white">{{ report.company_name or 'Unknown Company' }}</span>
-        </div>
-    </nav>
+      .chat-container {
+        height: 450px;
+        overflow-y: auto;
+        padding: 15px;
+        border-radius: 5px;
+        /* border: 1px solid #e0e0e0; */
+        /* background-color: #f8f9fa; */
+      }
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-8">
-                <h1>{{ report.company_name or 'Report' }} Analysis</h1>
-                <p class="text-muted">File: {{ report.file_name }}</p>
-                
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Ask Questions About This Report</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="chat-container mb-3" id="chatContainer">
-                            <div class="chat-message bot-message">
-                                Hello! I'm your AI assistant for this annual report. Ask me any questions about the financial performance, risks, strategy, or other aspects of the report.
-                            </div>
-                        </div>
-                        
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="queryInput" placeholder="Ask a question about the report...">
-                            <button class="btn btn-primary" id="sendButton">Send</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Report Options</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>Generate report summaries and presentations:</p>
-                        <button class="btn btn-success mb-2 w-100" id="genTextBtn">Generate Text Summary</button>
-                        <button class="btn btn-success mb-4 w-100" id="genPresentationBtn">Generate Presentation</button>
-                        
-                        <p>Schedule automated analysis:</p>
-                        <button class="btn btn-warning mb-2 w-100" id="scheduleBtn">Schedule Analysis</button>
-                        
-                        <div id="reportGenerationStatus" class="alert alert-info mt-3 d-none">
-                            Generating report...
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Example Questions</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group">
-                            <button class="list-group-item list-group-item-action example-question">What are the key financial highlights?</button>
-                            <button class="list-group-item list-group-item-action example-question">What are the main risk factors?</button>
-                            <button class="list-group-item list-group-item-action example-question">What is the company's strategy?</button>
-                            <button class="list-group-item list-group-item-action example-question">How has the company performed compared to last year?</button>
-                            <button class="list-group-item list-group-item-action example-question">What is the dividend policy?</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      .chat-message {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        max-width: 80%;
+      }
+
+      .user-message {
+        background-color: #edecfe;
+        margin-left: auto;
+        text-align: right;
+      }
+
+      .bot-message {
+        background-color: #f3f3f3;
+        margin-right: auto;
+      }
+
+      .loading-indicator {
+        display: inline-block;
+        width: 80px;
+        text-align: center;
+      }
+
+      .loading-indicator:after {
+        content: " .";
+        animation: dots 1s steps(5, end) infinite;
+      }
+
+      @keyframes dots {
+        0%,
+        20% {
+          content: " .";
+        }
+        40% {
+          content: " ..";
+        }
+        60% {
+          content: " ...";
+        }
+        80%,
+        100% {
+          content: " ....";
+        }
+      }
+
+      .supporting-info {
+        font-size: 0.85rem;
+        margin-top: 10px;
+        padding: 8px;
+        background-color: #f8f9fa;
+        border-left: 3px solid #007bff;
+      }
+
+      .new-navi {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding: 1rem 2rem;
+        font-family: "Inter", sans-serif;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      }
+
+      .nav-title {
+        color: #1e1e2f;
+        font-size: 1.25rem;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-title:hover {
+        opacity: 0.75;
+      }
+
+      .body {
+        background-color: #f6f6f6;
+      }
+
+      .hero {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #e8d0f6, #cfe4ff, #fffafc);
+        border-radius: 24px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #000b20;
+        margin-bottom: 1rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.2rem;
+        color: #4b5563;
+        max-width: 600px;
+        margin-bottom: 2rem;
+      }
+
+      .hero-body {
+        font-size: 0.8rem;
+        color: #4b5563;
+        max-width: 400px;
+        margin-bottom: 2rem;
+      }
+
+      .hero-btn {
+        width: 100%;
+        background-color: #232429;
+        color: white;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 24px;
+      }
+
+      .hero-btn-p {
+        width: 100%;
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: white;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 24px;
+      }
+
+      .hero-btn:hover {
+        background-color: #333333;
+      }
+
+      .ai-button {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: white;
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 9999px;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.25s ease;
+      }
+
+      .section-card {
+        background-color: #ffff;
+        border-radius: 16px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      }
+    </style>
+  </head>
+  <nav class="new-navi">
+    <div class="">
+      <a class="nav-title" href="/">
+        <img
+          src="{{ url_for('static', filename='chat-logo.svg') }}"
+          alt="Logo"
+          width="150"
+        />
+      </a>
+      <!-- <a class="nav-title" href="/">Annual Report AI Agent</a> -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#" id="alertsLink">Alerts</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" id="tasksLink">Scheduled Tasks</a>
+          </li> -->
+        </ul>
+      </div>
     </div>
-    
+  </nav>
+  <body class="body">
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-md-8">
+          <h2>{{ report.company_name or 'Report' }} Analysis</h2>
+          <p class="hero-body">File: {{ report.file_name }}</p>
+
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h6 class="mb-0">Ask Questions About This Report</h6>
+            </div>
+            <div class="card-body">
+              <div class="chat-container mb-3" id="chatContainer">
+                <div class="chat-message bot-message">
+                  Hello! I'm your AI assistant for this annual report. Ask me
+                  any questions about the financial performance, risks,
+                  strategy, or other aspects of the report.
+                </div>
+              </div>
+
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="queryInput"
+                  placeholder="Ask a question about the report..."
+                />
+                <button class="ai-button" id="sendButton">Send</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="section-card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">Report Options</h5>
+            </div>
+            <div class="card-body">
+              <p>Generate report summaries and presentations:</p>
+              <button class="hero-btn" id="genTextBtn">
+                <img
+                  src="{{ url_for('static', filename='icon-text.svg') }}"
+                  alt="Logo"
+                  width="24"
+                />
+                Generate Text Summary
+              </button>
+              <button class="hero-btn mt-3 mb-3" id="genPresentationBtn">
+                <img
+                  src="{{ url_for('static', filename='icon-presentation.svg') }}"
+                  alt="Logo"
+                  width="24"
+                />
+                Generate Presentation
+              </button>
+
+              <p>Schedule automated analysis:</p>
+              <button class="hero-btn-p" id="scheduleBtn">
+                <img
+                  src="{{ url_for('static', filename='icon-schedule.svg') }}"
+                  alt="Logo"
+                  width="24"
+                />
+                Schedule Analysis
+              </button>
+
+              <div
+                id="reportGenerationStatus"
+                class="alert alert-info mt-3 d-none"
+              >
+                Generating report...
+              </div>
+            </div>
+          </div>
+
+          <div class="section-card mb-3">
+            <div class="card-header">
+              <h5 class="mb-0">Example Questions</h5>
+            </div>
+            <div class="card-body">
+              <div class="list-group">
+                <button
+                  class="list-group-item list-group-item-action example-question"
+                >
+                  What are the key financial highlights?
+                </button>
+                <button
+                  class="list-group-item list-group-item-action example-question"
+                >
+                  What are the main risk factors?
+                </button>
+                <button
+                  class="list-group-item list-group-item-action example-question"
+                >
+                  What is the company's strategy?
+                </button>
+                <button
+                  class="list-group-item list-group-item-action example-question"
+                >
+                  How has the company performed compared to last year?
+                </button>
+                <button
+                  class="list-group-item list-group-item-action example-question"
+                >
+                  What is the dividend policy?
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Schedule Modal -->
     <div class="modal fade" id="scheduleModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Schedule Automated Analysis</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Schedule Type</label>
-                        <select class="form-select" id="scheduleType">
-                            <option value="now">Run Once Now</option>
-                            <option value="date">Run at Specific Date/Time</option>
-                        </select>
-                    </div>
-                    
-                    <div class="mb-3 schedule-date-params d-none">
-                        <label class="form-label">Run Date/Time</label>
-                        <input type="datetime-local" class="form-control" id="scheduleDateTime">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Analysis Queries</label>
-                        <textarea class="form-control" id="analysisQueries" rows="5">What are the key financial highlights?
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Schedule Automated Analysis</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Schedule Type</label>
+              <select class="form-select" id="scheduleType">
+                <option value="now">Run Once Now</option>
+                <option value="date">Run at Specific Date/Time</option>
+              </select>
+            </div>
+
+            <div class="mb-3 schedule-date-params d-none">
+              <label class="form-label">Run Date/Time</label>
+              <input
+                type="datetime-local"
+                class="form-control"
+                id="scheduleDateTime"
+              />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Analysis Queries</label>
+              <textarea class="form-control" id="analysisQueries" rows="5">
+What are the key financial highlights?
 What are the main risk factors?
 What is the company's strategy and outlook?
 How has the company performed compared to previous periods?
-What are the significant accounting policies?</textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="submitScheduleBtn">Schedule</button>
-                </div>
+What are the significant accounting policies?</textarea
+              >
             </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="submitScheduleBtn"
+            >
+              Schedule
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const reportId = '{{ report.id }}';
-            const chatContainer = document.getElementById('chatContainer');
-            const queryInput = document.getElementById('queryInput');
-            const sendButton = document.getElementById('sendButton');
-            
-            // Report generation buttons
-            const genTextBtn = document.getElementById('genTextBtn');
-            const genPresentationBtn = document.getElementById('genPresentationBtn');
-            const reportGenerationStatus = document.getElementById('reportGenerationStatus');
-            
-            // Example questions
-            const exampleQuestions = document.querySelectorAll('.example-question');
-            
-            // Schedule modal
-            const scheduleBtn = document.getElementById('scheduleBtn');
-            const scheduleModal = new bootstrap.Modal(document.getElementById('scheduleModal'));
-            const scheduleType = document.getElementById('scheduleType');
-            const scheduleDateParams = document.querySelector('.schedule-date-params');
-            const scheduleDateTime = document.getElementById('scheduleDateTime');
-            const analysisQueries = document.getElementById('analysisQueries');
-            const submitScheduleBtn = document.getElementById('submitScheduleBtn');
-            
-            // Initialize with a default datetime
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(9, 0, 0, 0);
-            scheduleDateTime.value = tomorrow.toISOString().slice(0, 16);
-            
-            // Event listeners
-            sendButton.addEventListener('click', sendQuery);
-            queryInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendQuery();
-                }
-            });
-            
-            exampleQuestions.forEach(button => {
-                button.addEventListener('click', function() {
-                    queryInput.value = this.textContent;
-                    sendQuery();
-                });
-            });
-            
-            genTextBtn.addEventListener('click', function() {
-                generateReport('text');
-            });
-            
-            genPresentationBtn.addEventListener('click', function() {
-                generateReport('presentation');
-            });
-            
-            scheduleBtn.addEventListener('click', function() {
-                scheduleModal.show();
-            });
-            
-            scheduleType.addEventListener('change', function() {
-                if (this.value === 'date') {
-                    scheduleDateParams.classList.remove('d-none');
-                } else {
-                    scheduleDateParams.classList.add('d-none');
-                }
-            });
-            
-            submitScheduleBtn.addEventListener('click', function() {
-                scheduleAnalysis();
-            });
-            
-            // Functions
-            function sendQuery() {
-                const query = queryInput.value.trim();
-                if (!query) return;
-                
-                // Add user message
-                addMessage(query, 'user');
-                
-                // Add loading indicator
-                const loadingId = 'loading-' + Date.now();
-                addLoadingIndicator(loadingId);
-                
-                // Clear input
-                queryInput.value = '';
-                
-                // Send query to server
-                fetch(`/api/query/${reportId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ query: query })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    // Remove loading indicator
-                    removeLoadingIndicator(loadingId);
-                    
-                    // Add bot response
-                    if (data.error) {
-                        addMessage(`Error: ${data.error}`, 'bot');
-                    } else {
-                        addMessage(data.response, 'bot', data.supporting_info);
-                    }
-                })
-                .catch(error => {
-                    // Remove loading indicator
-                    removeLoadingIndicator(loadingId);
-                    
-                    // Add error message
-                    addMessage(`Error: ${error.message}`, 'bot');
-                });
-            }
-            
-            function addMessage(message, sender, supportingInfo = null) {
-                const messageElement = document.createElement('div');
-                messageElement.className = `chat-message ${sender}-message`;
-                messageElement.textContent = message;
-                
-                // Add supporting info if provided
-                if (supportingInfo && supportingInfo.length > 0) {
-                    const infoElement = document.createElement('div');
-                    infoElement.className = 'supporting-info';
-                    
-                    const infoHeader = document.createElement('strong');
-                    infoHeader.textContent = 'Supporting Information:';
-                    infoElement.appendChild(infoHeader);
-                    
-                    const infoList = document.createElement('ul');
-                    supportingInfo.forEach(info => {
-                        const item = document.createElement('li');
-                        item.textContent = info.text;
-                        infoList.appendChild(item);
-                    });
-                    
-                    infoElement.appendChild(infoList);
-                    messageElement.appendChild(infoElement);
-                }
-                
-                chatContainer.appendChild(messageElement);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-            
-            function addLoadingIndicator(id) {
-                const loadingElement = document.createElement('div');
-                loadingElement.id = id;
-                loadingElement.className = 'chat-message bot-message';
-                
-                const loadingIndicator = document.createElement('span');
-                loadingIndicator.className = 'loading-indicator';
-                loadingIndicator.textContent = 'Thinking';
-                
-                loadingElement.appendChild(loadingIndicator);
-                chatContainer.appendChild(loadingElement);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }
-            
-            function removeLoadingIndicator(id) {
-                const loadingElement = document.getElementById(id);
-                if (loadingElement) {
-                    loadingElement.remove();
-                }
-            }
-            
-            function generateReport(reportType) {
-                // Show status
-                reportGenerationStatus.textContent = `Generating ${reportType} report...`;
-                reportGenerationStatus.classList.remove('d-none');
-                
-                // Disable buttons
-                genTextBtn.disabled = true;
-                genPresentationBtn.disabled = true;
-                
-                // Send request
-                fetch(`/api/generate/${reportId}/${reportType}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        reportGenerationStatus.textContent = `Error: ${data.error}`;
-                        reportGenerationStatus.classList.add('alert-danger');
-                        reportGenerationStatus.classList.remove('alert-info');
-                    } else {
-                        reportGenerationStatus.textContent = data.message;
-                        reportGenerationStatus.classList.add('alert-success');
-                        reportGenerationStatus.classList.remove('alert-info');
-                        
-                        // Add download link
-                        const downloadLink = document.createElement('a');
-                        downloadLink.href = data.download_url;
-                        downloadLink.textContent = 'Download';
-                        downloadLink.className = 'btn btn-sm btn-primary mt-2';
-                        reportGenerationStatus.appendChild(document.createElement('br'));
-                        reportGenerationStatus.appendChild(downloadLink);
-                    }
-                })
-                .catch(error => {
-                    reportGenerationStatus.textContent = `Error: ${error.message}`;
-                    reportGenerationStatus.classList.add('alert-danger');
-                    reportGenerationStatus.classList.remove('alert-info');
-                })
-                .finally(() => {
-                    // Re-enable buttons
-                    genTextBtn.disabled = false;
-                    genPresentationBtn.disabled = false;
-                });
-            }
-            
-            function scheduleAnalysis() {
-                const type = scheduleType.value;
-                let params = {};
-                let queries = analysisQueries.value.split('\\n').filter(q => q.trim() !== '');
-                
-                if (type === 'date') {
-                    const scheduleDate = new Date(scheduleDateTime.value);
-                    params = { 
-                        run_date: scheduleDate.toISOString() 
-                    };
-                }
-                
-                // Send request
-                fetch(`/api/schedule/${reportId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        schedule_type: type,
-                        schedule_params: params,
-                        queries: queries
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(`Error: ${data.error}`);
-                    } else {
-                        alert(`Analysis scheduled successfully! Task ID: ${data.task_id}`);
-                        scheduleModal.hide();
-                    }
-                })
-                .catch(error => {
-                    alert(`Error: ${error.message}`);
-                });
-            }
+      document.addEventListener("DOMContentLoaded", function () {
+        const reportId = "{{ report.id }}";
+        const chatContainer = document.getElementById("chatContainer");
+        const queryInput = document.getElementById("queryInput");
+        const sendButton = document.getElementById("sendButton");
+
+        // Report generation buttons
+        const genTextBtn = document.getElementById("genTextBtn");
+        const genPresentationBtn =
+          document.getElementById("genPresentationBtn");
+        const reportGenerationStatus = document.getElementById(
+          "reportGenerationStatus"
+        );
+
+        // Example questions
+        const exampleQuestions = document.querySelectorAll(".example-question");
+
+        // Schedule modal
+        const scheduleBtn = document.getElementById("scheduleBtn");
+        const scheduleModal = new bootstrap.Modal(
+          document.getElementById("scheduleModal")
+        );
+        const scheduleType = document.getElementById("scheduleType");
+        const scheduleDateParams = document.querySelector(
+          ".schedule-date-params"
+        );
+        const scheduleDateTime = document.getElementById("scheduleDateTime");
+        const analysisQueries = document.getElementById("analysisQueries");
+        const submitScheduleBtn = document.getElementById("submitScheduleBtn");
+
+        // Initialize with a default datetime
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(9, 0, 0, 0);
+        scheduleDateTime.value = tomorrow.toISOString().slice(0, 16);
+
+        // Event listeners
+        sendButton.addEventListener("click", sendQuery);
+        queryInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            sendQuery();
+          }
         });
+
+        exampleQuestions.forEach((button) => {
+          button.addEventListener("click", function () {
+            queryInput.value = this.textContent;
+            sendQuery();
+          });
+        });
+
+        genTextBtn.addEventListener("click", function () {
+          generateReport("text");
+        });
+
+        genPresentationBtn.addEventListener("click", function () {
+          generateReport("presentation");
+        });
+
+        scheduleBtn.addEventListener("click", function () {
+          scheduleModal.show();
+        });
+
+        scheduleType.addEventListener("change", function () {
+          if (this.value === "date") {
+            scheduleDateParams.classList.remove("d-none");
+          } else {
+            scheduleDateParams.classList.add("d-none");
+          }
+        });
+
+        submitScheduleBtn.addEventListener("click", function () {
+          scheduleAnalysis();
+        });
+
+        // Functions
+        function sendQuery() {
+          const query = queryInput.value.trim();
+          if (!query) return;
+
+          // Add user message
+          addMessage(query, "user");
+
+          // Add loading indicator
+          const loadingId = "loading-" + Date.now();
+          addLoadingIndicator(loadingId);
+
+          // Clear input
+          queryInput.value = "";
+
+          // Send query to server
+          fetch(`/api/query/${reportId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query: query }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Remove loading indicator
+              removeLoadingIndicator(loadingId);
+
+              // Add bot response
+              if (data.error) {
+                addMessage(`Error: ${data.error}`, "bot");
+              } else {
+                addMessage(data.response, "bot", data.supporting_info);
+              }
+            })
+            .catch((error) => {
+              // Remove loading indicator
+              removeLoadingIndicator(loadingId);
+
+              // Add error message
+              addMessage(`Error: ${error.message}`, "bot");
+            });
+        }
+
+        function addMessage(message, sender, supportingInfo = null) {
+          const messageElement = document.createElement("div");
+          messageElement.className = `chat-message ${sender}-message`;
+          messageElement.textContent = message;
+
+          // Add supporting info if provided
+          if (supportingInfo && supportingInfo.length > 0) {
+            const infoElement = document.createElement("div");
+            infoElement.className = "supporting-info";
+
+            const infoHeader = document.createElement("strong");
+            infoHeader.textContent = "Supporting Information:";
+            infoElement.appendChild(infoHeader);
+
+            const infoList = document.createElement("ul");
+            supportingInfo.forEach((info) => {
+              const item = document.createElement("li");
+              item.textContent = info.text;
+              infoList.appendChild(item);
+            });
+
+            infoElement.appendChild(infoList);
+            messageElement.appendChild(infoElement);
+          }
+
+          chatContainer.appendChild(messageElement);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addLoadingIndicator(id) {
+          const loadingElement = document.createElement("div");
+          loadingElement.id = id;
+          loadingElement.className = "chat-message bot-message";
+
+          const loadingIndicator = document.createElement("span");
+          loadingIndicator.className = "loading-indicator";
+          loadingIndicator.textContent = "Thinking";
+
+          loadingElement.appendChild(loadingIndicator);
+          chatContainer.appendChild(loadingElement);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function removeLoadingIndicator(id) {
+          const loadingElement = document.getElementById(id);
+          if (loadingElement) {
+            loadingElement.remove();
+          }
+        }
+
+        function generateReport(reportType) {
+          // Show status
+          reportGenerationStatus.textContent = `Generating ${reportType} report...`;
+          reportGenerationStatus.classList.remove("d-none");
+
+          // Disable buttons
+          genTextBtn.disabled = true;
+          genPresentationBtn.disabled = true;
+
+          // Send request
+          fetch(`/api/generate/${reportId}/${reportType}`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                reportGenerationStatus.textContent = `Error: ${data.error}`;
+                reportGenerationStatus.classList.add("alert-danger");
+                reportGenerationStatus.classList.remove("alert-info");
+              } else {
+                reportGenerationStatus.textContent = data.message;
+                reportGenerationStatus.classList.add("alert-success");
+                reportGenerationStatus.classList.remove("alert-info");
+
+                // Add download link
+                const downloadLink = document.createElement("a");
+                downloadLink.href = data.download_url;
+                downloadLink.textContent = "Download";
+                downloadLink.className = "btn btn-sm btn-primary mt-2";
+                reportGenerationStatus.appendChild(
+                  document.createElement("br")
+                );
+                reportGenerationStatus.appendChild(downloadLink);
+              }
+            })
+            .catch((error) => {
+              reportGenerationStatus.textContent = `Error: ${error.message}`;
+              reportGenerationStatus.classList.add("alert-danger");
+              reportGenerationStatus.classList.remove("alert-info");
+            })
+            .finally(() => {
+              // Re-enable buttons
+              genTextBtn.disabled = false;
+              genPresentationBtn.disabled = false;
+            });
+        }
+
+        function scheduleAnalysis() {
+          const type = scheduleType.value;
+          let params = {};
+          let queries = analysisQueries.value
+            .split("\\n")
+            .filter((q) => q.trim() !== "");
+
+          if (type === "date") {
+            const scheduleDate = new Date(scheduleDateTime.value);
+            params = {
+              run_date: scheduleDate.toISOString(),
+            };
+          }
+
+          // Send request
+          fetch(`/api/schedule/${reportId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              schedule_type: type,
+              schedule_params: params,
+              queries: queries,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.error) {
+                alert(`Error: ${data.error}`);
+              } else {
+                alert(
+                  `Analysis scheduled successfully! Task ID: ${data.task_id}`
+                );
+                scheduleModal.hide();
+              }
+            })
+            .catch((error) => {
+              alert(`Error: ${error.message}`);
+            });
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

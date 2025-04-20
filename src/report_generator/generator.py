@@ -71,50 +71,20 @@ class ReportGenerator:
         Returns:
             Company name or None if not found
         """
-        # Try to find the company name in the first few chunks
-        company_query = "company name legal entity"
-        chunks = self.vector_store.similarity_search(company_query, top_k=3)
-        
-        if not chunks:
-            return None
-        
-        # Use LLM to extract the company name
-        prompt = """
-        Extract the company name from the following text excerpt from an annual report.
-        Return ONLY the company name, nothing else.
-        
-        TEXT:
-        {text}
-        
-        COMPANY NAME:
-        """
-        
-        combined_text = "\n".join([chunk["text"] for chunk in chunks])
+        logger.info(f"Attempting to extract company name")
         
         try:
-            import openai
-            response = openai.ChatCompletion.create(
-                model=self.query_processor.model_name,
-                messages=[{
-                    "role": "user",
-                    "content": prompt.format(text=combined_text)
-                }],
-                temperature=0.1,
-                max_tokens=50
-            )
-            
-            company_name = response.choices[0].message.content.strip()
-            
-            # Clean up potential artifacts
-            company_name = re.sub(r'^["\'"]|["\'"]$', '', company_name)  # Remove quotes
-            company_name = re.sub(r'^COMPANY NAME:\s*', '', company_name)  # Remove prompt artifacts
-            
-            logger.info(f"Extracted company name: {company_name}")
-            return company_name
-            
+            filename = os.path.basename(self.report_path)
+            if "_" in filename:
+                name_part = filename.split("_")[0]
+                if name_part and len(name_part) > 3:
+                    logger.info(f"Using name from filename: {name_part}")
+                    return name_part.replace('-', ' ').title()
         except Exception as e:
-            logger.error(f"Error extracting company name: {str(e)}")
-            return None
+            logger.error(f"Error extracting name from filename: {str(e)}")
+        
+        logger.info("Could not extract company name")
+        return None
     
     def generate_executive_summary(self, max_length: int = 1000) -> str:
         """
