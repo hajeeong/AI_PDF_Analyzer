@@ -1,4 +1,4 @@
-# Annual Report AI Agent
+# Recur AI
 
 An intelligent application that enables users to ask natural language questions and receive meaningful answers from annual report PDFs. The agent can process, analyze, and generate insights from complex business documents.
 
