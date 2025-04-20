@@ -75,12 +75,14 @@
         color: #000b20;
         margin-bottom: 1rem;
       }
+
       .hero-subtitle {
         font-size: 1.2rem;
         color: #4b5563;
         max-width: 600px;
         margin-bottom: 2rem;
       }
+
       .hero-body {
         font-size: 0.8rem;
         color: #4b5563;
@@ -112,17 +114,32 @@
         padding: 1rem 2rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
       }
+      .new-nav-item {
+        color: #000b20;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-decoration: none;
+        margin-right: 20px;
+      }
+      .list-wrapper {
+        display: flex;
+        align-items: center;
+        align-items: baseline;
+      }
     </style>
   </head>
   <nav class="new-navi">
-    <div class="">
-      <a class="nav-title" href="/">
-        <img
-          src="{{ url_for('static', filename='chat-logo.svg') }}"
-          alt="Logo"
-          width="150"
-        />
-      </a>
+    <a class="nav-title" href="/">
+      <img
+        src="{{ url_for('static', filename='chat-logo.svg') }}"
+        alt="Logo"
+        width="150"
+      />
+    </a>
+    <div class="list-wrapper">
+      <a class="new-nav-item mr-3" href="#" id="alertsLink">Alerts</a>
+      <a class="new-nav-item" href="#" id="tasksLink">Scheduled Tasks</a>
       <!-- <a class="nav-title" href="/">Annual Report AI Agent</a> -->
       <button
         class="navbar-toggler"
@@ -132,16 +149,6 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="#" id="alertsLink">Alerts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="tasksLink">Scheduled Tasks</a>
-          </li> -->
-        </ul>
-      </div>
     </div>
   </nav>
   <body class="body">
@@ -173,28 +180,34 @@
         <p id="processingMessage">Initializing...</p>
       </div>
 
-        <h2 class="mb-3 mt-5">Your Reports</h2>
-        <div class="row" id="reportsContainer">
-            <!-- Report cards will be generated here -->
-            {% if reports %}
-                {% for report_id, report in reports.items() %}
-                <div class="col-md-4">
-                    <div class="card report-card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ report.company_name or 'Unknown Company' }}</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">{{ report.file_name }}</h6>
-                            <p class="card-text">Uploaded: {{ report.upload_time }}</p>
-                            <a href="/report/{{ report_id }}" class="btn btn-primary">View Report</a>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="col-12">
-                    <p>No reports uploaded yet. Upload an annual report PDF to get started.</p>
-                </div>
-            {% endif %}
+      <h2 class="mb-3 mt-5">Your Reports</h2>
+      <div class="row" id="reportsContainer">
+        <!-- Report cards will be generated here -->
+        {% if reports %} {% for report_id, report in reports.items() %}
+        <div class="col-md-4">
+          <div class="card report-card">
+            <div class="card-body">
+              <h5 class="card-title">
+                {{ report.company_name or 'Unknown Company' }}
+              </h5>
+              <h6 class="card-subtitle mb-2 text-muted">
+                {{ report.file_name }}
+              </h6>
+              <p class="card-text">Uploaded: {{ report.upload_time }}</p>
+              <a href="/report/{{ report_id }}" class="ai-button"
+                >View Report</a
+              >
+            </div>
+          </div>
         </div>
+        {% endfor %} {% else %}
+        <div class="col-12">
+          <p>
+            No reports uploaded yet. Upload an annual report PDF to get started.
+          </p>
+        </div>
+        {% endif %}
+      </div>
     </div>
 
     <!-- Alerts Modal -->

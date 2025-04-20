@@ -176,17 +176,34 @@
         border: 1px solid #ddd;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
       }
+
+      .new-nav-item {
+        color: #000b20;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-decoration: none;
+        margin-right: 20px;
+      }
+
+      .list-wrapper {
+        display: flex;
+        align-items: center;
+        align-items: baseline;
+      }
     </style>
   </head>
   <nav class="new-navi">
-    <div class="">
-      <a class="nav-title" href="/">
-        <img
-          src="{{ url_for('static', filename='chat-logo.svg') }}"
-          alt="Logo"
-          width="150"
-        />
-      </a>
+    <a class="nav-title" href="/">
+      <img
+        src="{{ url_for('static', filename='chat-logo.svg') }}"
+        alt="Logo"
+        width="150"
+      />
+    </a>
+    <div class="list-wrapper">
+      <a class="new-nav-item mr-3" href="#" id="alertsLink">Alerts</a>
+      <a class="new-nav-item" href="#" id="tasksLink">Scheduled Tasks</a>
       <!-- <a class="nav-title" href="/">Annual Report AI Agent</a> -->
       <button
         class="navbar-toggler"
@@ -196,16 +213,6 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <!-- <li class="nav-item">
-            <a class="nav-link" href="#" id="alertsLink">Alerts</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#" id="tasksLink">Scheduled Tasks</a>
-          </li> -->
-        </ul>
-      </div>
     </div>
   </nav>
   <body class="body">
