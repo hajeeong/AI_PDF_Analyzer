@@ -1,0 +1,51 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment
+venv/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Application generated files
+data/processed/
+data/generated/
+data/vector_store/
+data/tasks/
+*.log
+
+# Sensitive configuration
+config/*.json
+!config/sample_config.json
+
+# Test files
+.coverage
+htmlcov/
+.pytest_cache/
