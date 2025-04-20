@@ -231,6 +231,7 @@ class QueryProcessor:
         Returns:
             Dictionary with relevant chunks and context
         """
+        print(f"DEBUG: Retrieving chunks for query: {query} (type: {query_type})")
         # For general queries, do a hybrid search
         if query_type == "general":
             chunks = self.vector_store.hybrid_search(query, top_k=5)
@@ -356,7 +357,10 @@ class QueryProcessor:
                     "context_2": self._format_context(chunks[mid:]),
                     "chunks": chunks
                 }
-        
+        print(f"DEBUG: Retrieved {len(chunks)} chunks")
+        context_length = len(self._format_context(chunks))
+        print(f"DEBUG: Context length: {context_length} characters")
+
         # Default case
         chunks = self.vector_store.similarity_search(query, top_k=5)
         return {
@@ -452,7 +456,12 @@ class QueryProcessor:
         
         try:
             # Call OpenAI API
-            response = openai.ChatCompletion.create(
+            client = openai.OpenAI(api_key=openai.api_key)
+            print(f"DEBUG: Prompt template: {query_type}")
+            print(f"DEBUG: Prompt variables: {list(prompt_variables.keys())}")
+            print(f"DEBUG: Final prompt length: {len(prompt)}")
+            
+            response = client.chat.completions.create(
                 model=self.model_name,
                 messages=[{
                     "role": "system",
@@ -464,9 +473,12 @@ class QueryProcessor:
                 temperature=self.temperature,
                 max_tokens=1200
             )
-            
-            # Extract the response text
             answer = response.choices[0].message.content.strip()
+            import re
+            answer = re.sub(r'<search_reminders>.*?</search_reminders>', '', answer, flags=re.DOTALL)
+            answer = re.sub(r'<automated_reminder_from_anthropic>.*?</automated_reminder_from_anthropic>', '', answer, flags=re.DOTALL)
+            answer = re.sub(r'<.*?>.*?</.*?>', '', answer, flags=re.DOTALL)
+
             return answer
             
         except Exception as e:

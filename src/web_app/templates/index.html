@@ -75,7 +75,7 @@
                 <div class="col-md-4">
                     <div class="card report-card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ report.company_name or 'Unknown Company' }}</h5>
+                            <h5 class="card-title">{{ report.company_name }}</h5>
                             <h6 class="card-subtitle mb-2 text-muted">{{ report.file_name }}</h6>
                             <p class="card-text">Uploaded: {{ report.upload_time }}</p>
                             <a href="/report/{{ report_id }}" class="btn btn-primary">View Report</a>

@@ -74,10 +74,7 @@ class LocalVectorStore:
         else:
             logger.warning(f"Section map file not found: {section_map_path}")
     
-    def similarity_search(self, 
-                          query: str, 
-                          top_k: int = 5, 
-                          threshold: float = 0.5) -> List[Dict[str, Any]]:
+    def similarity_search(self, query: str, top_k: int = 5, threshold: float = 0.3) -> List[Dict[str, Any]]:
         """
         Perform similarity search for a query.
         
@@ -89,6 +86,7 @@ class LocalVectorStore:
         Returns:
             List of chunk dictionaries with similarity scores
         """
+        print(f"DEBUG: Running similarity search for query: {query}")
         # Encode query
         query_embedding = self.embedding_model.encode(query)
         
@@ -97,7 +95,9 @@ class LocalVectorStore:
         
         # Get top-k results above threshold
         top_indices = np.argsort(-similarities)[:top_k*2]  # Get more than needed to filter by threshold
-        
+        print(f"DEBUG: Found {len(similarities)} potential matches")
+        print(f"DEBUG: Top similarity score: {similarities[top_indices[0]] if len(top_indices) > 0 else 'none'}")
+
         results = []
         for idx in top_indices:
             similarity = similarities[idx]
@@ -112,6 +112,10 @@ class LocalVectorStore:
                 break
         
         logger.info(f"Found {len(results)} results for query: {query[:50]}{'...' if len(query) > 50 else ''}")
+        
+        print(f"DEBUG: Returning {len(results)} results")
+        for i, result in enumerate(results[:2]):  # Print first 2 results
+            print(f"DEBUG: Result {i}: {result['text'][:100]}...")
         
         return results
     
